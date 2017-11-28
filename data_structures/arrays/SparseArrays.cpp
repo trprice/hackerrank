@@ -8,11 +8,11 @@ using namespace std;
 
 
 int main() {
-    int numStings;
-    cin >> numStings;
+    int numStrings;
+    cin >> numStrings;
 
     map<string, int> stringMap;
-    for (int i = 0; i < numStings; i++) {
+    for (int i = 0; i < numStrings; i++) {
         string s;
         cin >> s;
         stringMap[s]++;

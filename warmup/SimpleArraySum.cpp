@@ -3,7 +3,13 @@
 using namespace std;
 
 int simpleArraySum(int n, vector <int> ar) {
-    // Complete this function
+    int sum = 0,
+        i = 0;
+    for (std::vector<int>::iterator it = ar.begin(); i < n && it != ar.end(); ++i, ++it) {
+        sum += *it;
+    }
+
+    return sum;
 }
 
 int main() {

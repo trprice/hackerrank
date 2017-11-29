@@ -10,14 +10,17 @@ int activityNotifications(vector <int> expenditure, int d) {
 
     // For each expenditure starting at d + 1, determine if we've got a notification.
     int notifications = 0;
-    int medianItem = (expenditure.size() - 1) / 2;
+    int medianItem = (d - 1) / 2;
     bool useOnlyMedianItem = d % 2;
-    for (int i = d; i < expenditure.size(); d++) {
+    for (int i = d; i < expenditure.size(); i++) {
         multiset<int> currentTransactions;
-        
+       
+        cout << "Emplacing: "; 
         for (int j = 1; j <= d; j++) { 
           currentTransactions.emplace(expenditure[i-j]);
+          cout << expenditure[i-j] << " ";
         }
+        cout << endl;
 
         int medianValue = 0;
         multiset<int>::iterator it = currentTransactions.begin();
@@ -26,10 +29,12 @@ int activityNotifications(vector <int> expenditure, int d) {
           it++;
         }
         if (useOnlyMedianItem) {
+          cout << "Using Median Item. medianItem: " << medianItem << endl;
           ++it;
           medianValue = *it;
         }
         else {
+          cout << "Not Using Median Item" << endl;
           medianValue += *it;
 
           ++it;
@@ -37,6 +42,8 @@ int activityNotifications(vector <int> expenditure, int d) {
 
           medianValue /= 2;
         }
+
+        cout << "Median Value: " << medianValue << endl;
 
         if (expenditure[i] >= (medianValue * 2))
           notifications++;

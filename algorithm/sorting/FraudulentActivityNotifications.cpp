@@ -19,13 +19,27 @@ int activityNotifications(vector <int> expenditure, int d) {
           currentTransactions.push_back(expenditure[i-j]);
         }
 
-        // TRP -- Not fast enough -- try writing bucket sort or ???
-        sort(currentTransactions.begin(), currentTransactions.end());
+        // Bucket sort
+        int maxExpenditureAmount = 200; // Specified by problem statement.
+        int buckets[maxExpenditureAmount];
+
+        // Initialize buckets
+        for (int j = 0; j < maxExpenditureAmount; j++)
+          buckets[j] = 0;
+
+        // Sort into buckets
+        for (int j = 0; j < currentTransactions.size(); j++)
+          buckets[currentTransactions[j]]++;
+        
+        // Sort back into currentTransactions
+        int j, k, l;
+        l = 0;
+        for (j = 0; j < maxExpenditureAmount; j++)
+          for (k = buckets[j]; k > 0; k--)
+            currentTransactions[l++] = j; 
+
 
         float medianValue = 0;
-        int medianItem = (d - 1) / 2;
-        cout << "medianItem: " << medianItem << endl;
-        bool useOnlyMedianItem = d % 2;
         if (useOnlyMedianItem) {
           medianValue = currentTransactions[medianItem];
         }

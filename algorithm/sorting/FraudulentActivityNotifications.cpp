@@ -13,34 +13,30 @@ int activityNotifications(vector <int> expenditure, int d) {
     int medianItem = (d - 1) / 2;
     bool useOnlyMedianItem = d % 2;
     for (int i = d; i < expenditure.size(); i++) {
-        multiset<int> currentTransactions;
-       
+        vector<int> currentTransactions;
+
         for (int j = 1; j <= d; j++) { 
-          currentTransactions.emplace(expenditure[i-j]);
+          currentTransactions.push_back(expenditure[i-j]);
         }
 
-        int medianValue = 0;
-        multiset<int>::iterator it = currentTransactions.begin();
+        // TRP -- Not fast enough -- try writing bucket sort or ???
+        sort(currentTransactions.begin(), currentTransactions.end());
 
-        for (int j = 0; j < medianItem; j++) {
-          it++;
-        }
+        float medianValue = 0;
+        int medianItem = (d - 1) / 2;
+        cout << "medianItem: " << medianItem << endl;
+        bool useOnlyMedianItem = d % 2;
         if (useOnlyMedianItem) {
-          ++it;
-          medianValue = *it;
+          medianValue = currentTransactions[medianItem];
         }
         else {
-          float a = *it;
+          float a = currentTransactions[medianItem];
+          float b = currentTransactions[medianItem+1];
 
-          ++it;
-          float b = *it;
-
-          float avg = (a + b) / 2;
-
-          medianValue = round(avg);
+          medianValue = (a + b) / 2;
         }
 
-        if (expenditure[i] >= (medianValue * 2))
+        if (expenditure[i] >= (int)(medianValue * 2))
           notifications++;
     }
 

@@ -2,13 +2,14 @@
 
 using namespace std;
 
+#define MAXAMOUNT 200
+
 void BucketSort(vector<int> &currentTransactions) {
     // Bucket sort
-    int maxExpenditureAmount = 200; // Specified by problem statement.
-    int buckets[maxExpenditureAmount];
+    int buckets[MAXAMOUNT];
 
     // Initialize buckets
-    for (int j = 0; j < maxExpenditureAmount; j++)
+    for (int j = 0; j < MAXAMOUNT; j++)
       buckets[j] = 0;
 
     // Sort into buckets
@@ -18,7 +19,7 @@ void BucketSort(vector<int> &currentTransactions) {
     // Sort back into currentTransactions
     int j, k, l;
     l = 0;
-    for (j = 0; j < maxExpenditureAmount; j++)
+    for (j = 0; j < MAXAMOUNT; j++)
       for (k = buckets[j]; k > 0; k--)
         currentTransactions[l++] = j; 
 }
@@ -29,19 +30,39 @@ int activityNotifications(vector <int> expenditure, int d) {
     if (expenditure.size() <= d)
       return 0;
 
+    int count[MAXAMOUNT];
+
+
     // For each expenditure starting at d + 1, determine if we've got a notification.
     int notifications = 0;
     int medianItem = (d - 1) / 2;
     bool useOnlyMedianItem = d % 2;
     for (int i = d; i < expenditure.size(); i++) {
-        vector<int> currentTransactions;
+//        vector<int> currentTransactions;
+//
+//        for (int j = 1; j <= d; j++) { 
+//          currentTransactions.push_back(expenditure[i-j]);
+//        }
+//
+//        BucketSort(currentTransactions);
 
-        for (int j = 1; j <= d; j++) { 
-          currentTransactions.push_back(expenditure[i-j]);
+        // Counting Sort
+        for (int i = 0; i < MAXAMOUNT; i++)
+          count[i] = 0;
+
+        for (int j = 1; j <= d; j++) {
+          count[(expenditure[i-j])]++;
+          cout << "expenditure[i-j]: " << expenditure[i-j] << " count[(expenditure[i-j])]: " << count[(expenditure[i-j])] << endl;
         }
 
-        BucketSort(currentTransactions);
+        for (int j = 1; j < MAXAMOUNT; j++)
+          count[j] += count[j-1];
 
+        int currentTransactions[d];
+        for (int j = 1; j <= d; j++) {
+          currentTransactions[count[(expenditure[i-j])] - 1] = expenditure[i-j];
+          count[(expenditure[i-j])]--;
+        }
 
         float medianValue = 0;
         if (useOnlyMedianItem) {

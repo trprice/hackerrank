@@ -30,13 +30,39 @@ int activityNotifications(vector <int> expenditure, int d) {
     if (expenditure.size() <= d)
       return 0;
 
-    int count[MAXAMOUNT];
+    cout << "d: " << d << endl;
 
+    int count[MAXAMOUNT];
+    int currentTransactions[d];
+
+    // Initial / i == d case.
+    for (int i = 0; i < MAXAMOUNT; i++)
+      count[i] = 0;
+
+    for (int j = 1; j <= d; j++)
+      count[(expenditure[d-j])]++;
+
+    for (int j = 1; j < MAXAMOUNT; j++)
+      count[j] += count[j-1];
+
+    for (int i = 0; i < 10; i++)
+      cout << "count[" << i << "]: " << count[i] << endl;
+
+    //for (int j = 1; j <= d; j++) {
+      //currentTransactions[count[(expenditure[d-j])] - 1] = expenditure[d-j];
+      //count[(expenditure[d-j])]--;
+    //}
 
     // For each expenditure starting at d + 1, determine if we've got a notification.
     int notifications = 0;
-    int medianItem = (d - 1) / 2;
+    int medianItem;
     bool useOnlyMedianItem = d % 2;
+    if (useOnlyMedianItem)
+      medianItem = d / 2 + 1;
+    else
+      medianItem = d / 2; 
+
+    cout << "medianItem: " << medianItem << endl;
     for (int i = d; i < expenditure.size(); i++) {
 //        vector<int> currentTransactions;
 //
@@ -47,36 +73,54 @@ int activityNotifications(vector <int> expenditure, int d) {
 //        BucketSort(currentTransactions);
 
         // Counting Sort
-        for (int i = 0; i < MAXAMOUNT; i++)
-          count[i] = 0;
+        if (i != d) {
+           // Suggestion is to remove the old value from count and add the new value.
+           count[expenditure[i - d - 1]]--;
+           count[expenditure[i]]++;          
 
-        for (int j = 1; j <= d; j++) {
-          count[(expenditure[i-j])]++;
-          cout << "expenditure[i-j]: " << expenditure[i-j] << " count[(expenditure[i-j])]: " << count[(expenditure[i-j])] << endl;
-        }
+           for (int i = 0; i < 10; i++)
+             cout << "count[" << i << "]: " << count[i] << endl;
 
-        for (int j = 1; j < MAXAMOUNT; j++)
-          count[j] += count[j-1];
-
-        int currentTransactions[d];
-        for (int j = 1; j <= d; j++) {
-          currentTransactions[count[(expenditure[i-j])] - 1] = expenditure[i-j];
-          count[(expenditure[i-j])]--;
+           // Can we just remove the old value and put expenditure[i - 1] in the right place?
+           //for (int j = 1; j <= d; j++) {
+              //currentTransactions[count[(expenditure[i-j])] - 1] = expenditure[i-j];
+              //count[(expenditure[i-j])]--;
+           //}
         }
 
         float medianValue = 0;
         if (useOnlyMedianItem) {
-          medianValue = currentTransactions[medianItem];
+          for (int i = 0; i < MAXAMOUNT; i++) {
+            if (count[i] > medianItem) {
+              medianValue = i;
+              break;
+            }
+          }
+          cout << "medianValue: " << medianValue << endl;
         }
         else {
-          float a = currentTransactions[medianItem];
-          float b = currentTransactions[medianItem+1];
+          float a, b;
+
+          a = b = -1;
+
+          for (int i = 0; i < MAXAMOUNT; i++) {
+            if ((count[i] > medianItem) && (a == -1))
+              a = i;
+            else if (count[i] > (medianItem + 1))
+              b = i;
+            
+            if (a != -1 && b != -1)
+              break;
+          }
 
           medianValue = (a + b) / 2;
+          cout << "medianValue: " << medianValue << endl;
         }
 
-        if (expenditure[i] >= (int)(medianValue * 2))
+        if (expenditure[i] >= (int)(medianValue * 2)) {
+          cout << "Incremented Notifications" << endl;
           notifications++;
+        }
     }
 
     return notifications;

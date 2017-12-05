@@ -2,14 +2,13 @@
 
 using namespace std;
 
-#define MAXAMOUNT 200
-
 void BucketSort(vector<int> &currentTransactions) {
     // Bucket sort
-    int buckets[MAXAMOUNT];
+    int maxExpenditureAmount = 200; // Specified by problem statement.
+    int buckets[maxExpenditureAmount];
 
     // Initialize buckets
-    for (int j = 0; j < MAXAMOUNT; j++)
+    for (int j = 0; j < maxExpenditureAmount; j++)
       buckets[j] = 0;
 
     // Sort into buckets
@@ -19,7 +18,7 @@ void BucketSort(vector<int> &currentTransactions) {
     // Sort back into currentTransactions
     int j, k, l;
     l = 0;
-    for (j = 0; j < MAXAMOUNT; j++)
+    for (j = 0; j < maxExpenditureAmount; j++)
       for (k = buckets[j]; k > 0; k--)
         currentTransactions[l++] = j; 
 }
@@ -30,97 +29,33 @@ int activityNotifications(vector <int> expenditure, int d) {
     if (expenditure.size() <= d)
       return 0;
 
-    cout << "d: " << d << endl;
-
-    int count[MAXAMOUNT];
-    int currentTransactions[d];
-
-    // Initial / i == d case.
-    for (int i = 0; i < MAXAMOUNT; i++)
-      count[i] = 0;
-
-    for (int j = 1; j <= d; j++)
-      count[(expenditure[d-j])]++;
-
-    for (int j = 1; j < MAXAMOUNT; j++)
-      count[j] += count[j-1];
-
-    for (int i = 0; i < 10; i++)
-      cout << "count[" << i << "]: " << count[i] << endl;
-
-    //for (int j = 1; j <= d; j++) {
-      //currentTransactions[count[(expenditure[d-j])] - 1] = expenditure[d-j];
-      //count[(expenditure[d-j])]--;
-    //}
-
     // For each expenditure starting at d + 1, determine if we've got a notification.
     int notifications = 0;
-    int medianItem;
+    int medianItem = (d - 1) / 2;
     bool useOnlyMedianItem = d % 2;
-    if (useOnlyMedianItem)
-      medianItem = d / 2 + 1;
-    else
-      medianItem = d / 2; 
-
-    cout << "medianItem: " << medianItem << endl;
     for (int i = d; i < expenditure.size(); i++) {
-//        vector<int> currentTransactions;
-//
-//        for (int j = 1; j <= d; j++) { 
-//          currentTransactions.push_back(expenditure[i-j]);
-//        }
-//
-//        BucketSort(currentTransactions);
+        vector<int> currentTransactions;
 
-        // Counting Sort
-        if (i != d) {
-           // Suggestion is to remove the old value from count and add the new value.
-           count[expenditure[i - d - 1]]--;
-           count[expenditure[i]]++;          
-
-           for (int i = 0; i < 10; i++)
-             cout << "count[" << i << "]: " << count[i] << endl;
-
-           // Can we just remove the old value and put expenditure[i - 1] in the right place?
-           //for (int j = 1; j <= d; j++) {
-              //currentTransactions[count[(expenditure[i-j])] - 1] = expenditure[i-j];
-              //count[(expenditure[i-j])]--;
-           //}
+        for (int j = 1; j <= d; j++) { 
+          currentTransactions.push_back(expenditure[i-j]);
         }
+
+        BucketSort(currentTransactions);
+
 
         float medianValue = 0;
         if (useOnlyMedianItem) {
-          for (int i = 0; i < MAXAMOUNT; i++) {
-            if (count[i] > medianItem) {
-              medianValue = i;
-              break;
-            }
-          }
-          cout << "medianValue: " << medianValue << endl;
+          medianValue = currentTransactions[medianItem];
         }
         else {
-          float a, b;
-
-          a = b = -1;
-
-          for (int i = 0; i < MAXAMOUNT; i++) {
-            if ((count[i] > medianItem) && (a == -1))
-              a = i;
-            else if (count[i] > (medianItem + 1))
-              b = i;
-            
-            if (a != -1 && b != -1)
-              break;
-          }
+          float a = currentTransactions[medianItem];
+          float b = currentTransactions[medianItem+1];
 
           medianValue = (a + b) / 2;
-          cout << "medianValue: " << medianValue << endl;
         }
 
-        if (expenditure[i] >= (int)(medianValue * 2)) {
-          cout << "Incremented Notifications" << endl;
+        if (expenditure[i] >= (int)(medianValue * 2))
           notifications++;
-        }
     }
 
     return notifications;

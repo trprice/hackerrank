@@ -2,6 +2,27 @@
 
 using namespace std;
 
+void BucketSort(vector<int> &currentTransactions) {
+    // Bucket sort
+    int maxExpenditureAmount = 200; // Specified by problem statement.
+    int buckets[maxExpenditureAmount];
+
+    // Initialize buckets
+    for (int j = 0; j < maxExpenditureAmount; j++)
+      buckets[j] = 0;
+
+    // Sort into buckets
+    for (int j = 0; j < currentTransactions.size(); j++)
+      buckets[currentTransactions[j]]++;
+    
+    // Sort back into currentTransactions
+    int j, k, l;
+    l = 0;
+    for (j = 0; j < maxExpenditureAmount; j++)
+      for (k = buckets[j]; k > 0; k--)
+        currentTransactions[l++] = j; 
+}
+
 int activityNotifications(vector <int> expenditure, int d) {
     // If we don't have at least d + 1 days of expenditures,
     // return 0 because there can't be any notifications.
@@ -19,24 +40,7 @@ int activityNotifications(vector <int> expenditure, int d) {
           currentTransactions.push_back(expenditure[i-j]);
         }
 
-        // Bucket sort
-        int maxExpenditureAmount = 200; // Specified by problem statement.
-        int buckets[maxExpenditureAmount];
-
-        // Initialize buckets
-        for (int j = 0; j < maxExpenditureAmount; j++)
-          buckets[j] = 0;
-
-        // Sort into buckets
-        for (int j = 0; j < currentTransactions.size(); j++)
-          buckets[currentTransactions[j]]++;
-        
-        // Sort back into currentTransactions
-        int j, k, l;
-        l = 0;
-        for (j = 0; j < maxExpenditureAmount; j++)
-          for (k = buckets[j]; k > 0; k--)
-            currentTransactions[l++] = j; 
+        BucketSort(currentTransactions);
 
 
         float medianValue = 0;

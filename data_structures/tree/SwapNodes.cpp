@@ -92,37 +92,6 @@ Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight) {
 // Breadth First / Level Order Printing
 //    Has to visit EVERY node to print
 
-// Normal BST Insert
-Node *insert(Node *root, int value) {
-    if (root == NULL) {
-        Node *newNode = new Node;
-        newNode->data = value;
-        newNode->left = NULL;
-        newNode->right = NULL;
-
-        root = newNode;
-    }
-    else {
-        if (value >= root->data)
-            insert(root->right, value);
-        else if (value < root->data)
-            insert(root->left, value);
-        else {
-            Node *newNode = new Node;
-            newNode->data = value;
-            newNode->left = NULL;
-            newNode->right = NULL;
-
-            if (value >= root->data)
-                root->right = newNode;
-            else if (value < root->data)
-                root->left = newNode;
-        }
-    }
-
-    return root;
-}
-
 // Tree insert based on HackerRank problem statement.
 Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, int childOfNode, int nodeNumber, int currentHeight) {
     if (root == NULL) {
@@ -180,6 +149,25 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
     return root;
 }
 
+void inorderPrint(Node *root) {
+  if (root == NULL)
+    return;
+
+  if (root->left != NULL)
+    inorderPrint(root->left);
+
+  cout << root->data << " ";
+
+  if (root->right != NULL)
+    inorderPrint(root->right);
+}
+
+Node *swapAtDepth(Node *root, int swapDepth) {
+  
+
+  return root;
+}
+
 int main() {
     // Default is a tree with value 1 at its root.
     Node *root = NULL;
@@ -208,9 +196,27 @@ int main() {
         nodeNumber++;
     }
 
+    int numSwaps;
+    cin >> numSwaps;
+
+    for (int i = 0; i < numSwaps; i++) {
+      int swapDepth;
+      cin >> swapDepth;
+
+      while (swapDepth <= currentHeight) {
+        root = swapAtDepth(root, swapDetph);
+
+        swapDepth *= 2;
+      }
+    }
+
     cout << "Calling BFS. root: " << root << endl;
     BreadthFirstSearch(root, -1, currentHeight);
     cout << "After BFS" << endl;
+
+    cout << "Inorder Print:" << endl;
+    inorderPrint(root);
+    cout << endl;
 
     return 0;
 }

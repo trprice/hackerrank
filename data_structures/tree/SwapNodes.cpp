@@ -17,12 +17,37 @@ struct Node {
 };
 
 // Breadth First / Level Order Search
+
+// Depth visitor
+Node *BFS_Visit(Node *root, int currentDepth, int desiredDepth) {
+  if (root == NULL)
+    return NULL;
+
+  if (currentDepth == 1) {
+    if (root->depth == desiredDepth)
+      return root;
+  }
+  else {
+    Node *found;
+
+    found = BFS_Visit(root->left, currentDepth - 1, desiredDepth);
+    if (found != NULL)
+      return found;
+
+    found = BFS_Visit(root->right, currentDepth - 1, desiredDepth);
+    if (found != NULL)
+      return found;
+  }
+
+  return NULL;
+}
+
+// Visit based on node number
 Node *BFS_Visit(Node *root, int currentDepth, int searchTerm) {
   if (root == NULL)
     return NULL;
 
   if (currentDepth == 1) {
-    // Visit -- Can we abstract this?
     if (root->nodeNumber == searchTerm)
       return root;
   }
@@ -41,6 +66,7 @@ Node *BFS_Visit(Node *root, int currentDepth, int searchTerm) {
   return NULL;
 }
 
+// Print visitor
 Node *BFS_Visit(Node *root, int currentDepth) {
   if (root == NULL)
     return NULL;
@@ -65,6 +91,7 @@ Node *BFS_Visit(Node *root, int currentDepth) {
   return NULL;
 }
 
+// Change to take the visitor as a function pointer.
 Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight) {
   if (root == NULL)
     return NULL;
@@ -163,7 +190,7 @@ void inorderPrint(Node *root) {
 }
 
 Node *swapAtDepth(Node *root, int swapDepth) {
-  
+  // Traverse to depth? Use BFS Search based on depth to get each side?
 
   return root;
 }
@@ -204,7 +231,7 @@ int main() {
       cin >> swapDepth;
 
       while (swapDepth <= currentHeight) {
-        root = swapAtDepth(root, swapDetph);
+        root = swapAtDepth(root, swapDepth);
 
         swapDepth *= 2;
       }

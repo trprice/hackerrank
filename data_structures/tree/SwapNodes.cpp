@@ -19,7 +19,7 @@ struct Node {
 // Breadth First / Level Order Search
 
 // Depth visitor
-Node *BFS_Visit(Node *root, int currentDepth, int desiredDepth) {
+Node *BFS_Visit_Depth(Node *root, int currentDepth, int desiredDepth) {
   if (root == NULL)
     return NULL;
 
@@ -30,11 +30,11 @@ Node *BFS_Visit(Node *root, int currentDepth, int desiredDepth) {
   else {
     Node *found;
 
-    found = BFS_Visit(root->left, currentDepth - 1, desiredDepth);
+    found = BFS_Visit_Depth(root->left, currentDepth - 1, desiredDepth);
     if (found != NULL)
       return found;
 
-    found = BFS_Visit(root->right, currentDepth - 1, desiredDepth);
+    found = BFS_Visit_Depth(root->right, currentDepth - 1, desiredDepth);
     if (found != NULL)
       return found;
   }
@@ -43,7 +43,7 @@ Node *BFS_Visit(Node *root, int currentDepth, int desiredDepth) {
 }
 
 // Visit based on node number
-Node *BFS_Visit(Node *root, int currentDepth, int searchTerm) {
+Node *BFS_Visit_NodeNumber(Node *root, int currentDepth, int searchTerm) {
   if (root == NULL)
     return NULL;
 
@@ -54,11 +54,11 @@ Node *BFS_Visit(Node *root, int currentDepth, int searchTerm) {
   else {
     Node *found;
 
-    found = BFS_Visit(root->left, currentDepth - 1, searchTerm);
+    found = BFS_Visit_NodeNumber(root->left, currentDepth - 1, searchTerm);
     if (found != NULL)
       return found;
 
-    found = BFS_Visit(root->right, currentDepth - 1, searchTerm);
+    found = BFS_Visit_NodeNumber(root->right, currentDepth - 1, searchTerm);
     if (found != NULL)
       return found;
   }
@@ -67,7 +67,7 @@ Node *BFS_Visit(Node *root, int currentDepth, int searchTerm) {
 }
 
 // Print visitor
-Node *BFS_Visit(Node *root, int currentDepth) {
+Node *BFS_Visit_Print(Node *root, int currentDepth, int searchTerm) {
   if (root == NULL)
     return NULL;
 
@@ -79,11 +79,11 @@ Node *BFS_Visit(Node *root, int currentDepth) {
   else {
     Node *found;
 
-    found = BFS_Visit(root->left, currentDepth - 1);
+    found = BFS_Visit_Print(root->left, currentDepth - 1, searchTerm);
     if (found != NULL)
       return found;
 
-    found = BFS_Visit(root->right, currentDepth - 1);
+    found = BFS_Visit_Print(root->right, currentDepth - 1, searchTerm);
     if (found != NULL)
       return found;
   }
@@ -92,7 +92,7 @@ Node *BFS_Visit(Node *root, int currentDepth) {
 }
 
 // Change to take the visitor as a function pointer.
-Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight) {
+Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight, Node* (*visitor)(Node *, int, int)) {
   if (root == NULL)
     return NULL;
 
@@ -103,10 +103,7 @@ Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight) {
   for (int i = 1; i <= maxHeight; i++) {
     Node *found = NULL;
     // Always call BFS_Visit with root so the recursion works.
-    if (searchTerm == -1)
-      found = BFS_Visit(root, i);
-    else
-      found = BFS_Visit(root, i, searchTerm);
+    found = visitor(root, i, searchTerm);
 
     if (found != NULL)
       return found;
@@ -135,7 +132,7 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
 
     // Here I need to find the node with nodeNumber == childOfNode
     // This should be a breadth first search.
-    Node *current = BreadthFirstSearch(root, childOfNode, currentHeight);
+    Node *current = BreadthFirstSearch(root, childOfNode, currentHeight, BFS_Visit_NodeNumber);
 
     if (current != NULL) {
       // Add both children with the specified values (or don't add if -1).
@@ -223,6 +220,7 @@ int main() {
         nodeNumber++;
     }
 
+    /*
     int numSwaps;
     cin >> numSwaps;
 
@@ -236,9 +234,10 @@ int main() {
         swapDepth *= 2;
       }
     }
+    */
 
     cout << "Calling BFS. root: " << root << endl;
-    BreadthFirstSearch(root, -1, currentHeight);
+    BreadthFirstSearch(root, -1, currentHeight, BFS_Visit_Print);
     cout << "After BFS" << endl;
 
     cout << "Inorder Print:" << endl;

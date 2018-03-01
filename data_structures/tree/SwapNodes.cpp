@@ -19,13 +19,17 @@ struct Node {
 // Breadth First / Level Order Search
 
 // Depth visitor
-Node *BFS_Visit_Depth(Node *root, int currentDepth, int desiredDepth) {
+Node *BFS_Visit_SwapAtDepth(Node *root, int currentDepth, int desiredDepth) {
   if (root == NULL)
     return NULL;
 
   if (currentDepth == 1) {
-    if (root->depth == desiredDepth)
-      return root;
+    Node *temp = root->right;
+
+    root->right = root->left;
+    root->left = temp;
+
+    return root;
   }
   else {
     Node *found;
@@ -186,8 +190,16 @@ void inorderPrint(Node *root) {
     inorderPrint(root->right);
 }
 
-Node *swapAtDepth(Node *root, int swapDepth) {
+Node *swapAtDepth(Node *root, int swapDepth, int maxHeight) {
   // Traverse to depth? Use BFS Search based on depth to get each side?
+  //
+  // This is probably not what we want to do because it'll only allow a swap on
+  // the first node found.
+  //
+  // Modify the vistor to handle the swap
+  Node *leftChildAtDepth = BreadthFirstSearch(root, swapDepth, maxHeight, BFS_Visit_Depth);
+
+
 
   return root;
 }
@@ -220,7 +232,7 @@ int main() {
         nodeNumber++;
     }
 
-    /*
+    
     int numSwaps;
     cin >> numSwaps;
 
@@ -229,12 +241,12 @@ int main() {
       cin >> swapDepth;
 
       while (swapDepth <= currentHeight) {
-        root = swapAtDepth(root, swapDepth);
+        root = swapAtDepth(root, swapDepth, currentHeight);
 
         swapDepth *= 2;
       }
     }
-    */
+    
 
     cout << "Calling BFS. root: " << root << endl;
     BreadthFirstSearch(root, -1, currentHeight, BFS_Visit_Print);

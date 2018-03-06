@@ -23,7 +23,8 @@ Node *BFS_Visit_SwapAtDepth(Node *root, int currentDepth, int desiredDepth) {
   if (root == NULL)
     return NULL;
 
-  if (currentDepth == 1) {
+  // This test is wrong ... how do we determine the correct depth?
+  if (desiredDepth == 1) {
     Node *temp = root->right;
 
     root->right = root->left;
@@ -34,11 +35,11 @@ Node *BFS_Visit_SwapAtDepth(Node *root, int currentDepth, int desiredDepth) {
   else {
     Node *found;
 
-    found = BFS_Visit_Depth(root->left, currentDepth - 1, desiredDepth);
+    found = BFS_Visit_SwapAtDepth(root->left, currentDepth - 1, desiredDepth - 1);
     if (found != NULL)
       return found;
 
-    found = BFS_Visit_Depth(root->right, currentDepth - 1, desiredDepth);
+    found = BFS_Visit_SwapAtDepth(root->right, currentDepth - 1, desiredDepth - 1);
     if (found != NULL)
       return found;
   }
@@ -121,11 +122,12 @@ Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight, Node* (*visi
 //    Has to visit EVERY node to print
 
 // Tree insert based on HackerRank problem statement.
-Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, int childOfNode, int nodeNumber, int currentHeight) {
+Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, int childOfNode, int nodeNumber, int *currentHeight) {
     if (root == NULL) {
       Node *newNode = new Node;
       newNode->data = leftChildValue;
       newNode->depth = 1; // default for root of tree
+      *currentHeight = 1;
       newNode->nodeNumber = 1;
       newNode->left = NULL;
       newNode->right = NULL;
@@ -136,7 +138,7 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
 
     // Here I need to find the node with nodeNumber == childOfNode
     // This should be a breadth first search.
-    Node *current = BreadthFirstSearch(root, childOfNode, currentHeight, BFS_Visit_NodeNumber);
+    Node *current = BreadthFirstSearch(root, childOfNode, *currentHeight, BFS_Visit_NodeNumber);
 
     if (current != NULL) {
       // Add both children with the specified values (or don't add if -1).
@@ -148,7 +150,8 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
         current->left = new Node;
         
         current->left->data = leftChildValue;
-        current->left->depth = currentHeight;
+        current->left->depth = current->depth + 1;
+        *currentHeight = current->left->depth;
         current->left->nodeNumber = nodeNumber;
         current->left->left = NULL;
         current->left->right = NULL;
@@ -162,7 +165,8 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
         current->right = new Node;
         
         current->right->data = rightChildValue;
-        current->right->depth = currentHeight;
+        current->right->depth = current->depth + 1;
+        *currentHeight = current->right->depth;
 
         if (current->left != NULL)
           current->right->nodeNumber = nodeNumber + 1;
@@ -197,9 +201,8 @@ Node *swapAtDepth(Node *root, int swapDepth, int maxHeight) {
   // the first node found.
   //
   // Modify the vistor to handle the swap
-  Node *leftChildAtDepth = BreadthFirstSearch(root, swapDepth, maxHeight, BFS_Visit_Depth);
-
-
+  root->left = BreadthFirstSearch(root->left, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
+  root->right = BreadthFirstSearch(root->right, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
 
   return root;
 }
@@ -207,40 +210,46 @@ Node *swapAtDepth(Node *root, int swapDepth, int maxHeight) {
 int main() {
     // Default is a tree with value 1 at its root.
     Node *root = NULL;
-
-    root = insertByNodeNumber(root, 1, -1, -1, -1, -1);
-
     int numNodes,
         currentHeight = 1; // Cheat on height by tracking here.
     cin >> numNodes;
 
+    root = insertByNodeNumber(root, 1, -1, -1, -1, &currentHeight);
+    
     for (int i = 1, nodeNumber = 2; i <= numNodes; i++) {
       // Cheat and track height here so that we don't have
       // to compute it in the breadth first / level order search.
-      currentHeight++;
-
       int leftChildValue, rightChildValue;
       
       // Left Node
       cin >> leftChildValue;
       cin >> rightChildValue;
-      root = insertByNodeNumber(root, leftChildValue, rightChildValue, i, nodeNumber++, currentHeight);
+      root = insertByNodeNumber(root, leftChildValue, rightChildValue, i, nodeNumber++, &currentHeight);
 
       // Increment again to make sure we're tracking the correct child number.
       if (leftChildValue != -1 &&
           rightChildValue != -1)
         nodeNumber++;
     }
+    
+    cout << "After Tree creation:" << endl;
+    inorderPrint(root);
+    cout << endl;
 
     
     int numSwaps;
     cin >> numSwaps;
 
+    cout << "numSwaps: " << numSwaps << endl;
+
     for (int i = 0; i < numSwaps; i++) {
       int swapDepth;
       cin >> swapDepth;
 
+      cout << "i: " << i << " swapDepth: " << swapDepth << " currentHeight: " << currentHeight << endl;
+
       while (swapDepth <= currentHeight) {
+        //root = BreadthFirstSearch(root, swapDepth, currentHeight, BFS_Visit_SwapAtDepth);
         root = swapAtDepth(root, swapDepth, currentHeight);
 
         swapDepth *= 2;
@@ -248,11 +257,7 @@ int main() {
     }
     
 
-    cout << "Calling BFS. root: " << root << endl;
-    BreadthFirstSearch(root, -1, currentHeight, BFS_Visit_Print);
-    cout << "After BFS" << endl;
-
-    cout << "Inorder Print:" << endl;
+    cout << "After Swap:" << endl;
     inorderPrint(root);
     cout << endl;
 

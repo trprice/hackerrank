@@ -20,7 +20,7 @@ struct Node {
 
 // Depth visitor
 Node *BFS_Visit_SwapAtDepth(Node *root, int currentDepth, int desiredDepth) {
-  if (root == NULL)
+  if (root == NULL) 
     return NULL;
 
   // This test is wrong ... how do we determine the correct depth?
@@ -33,15 +33,12 @@ Node *BFS_Visit_SwapAtDepth(Node *root, int currentDepth, int desiredDepth) {
     return root;
   }
   else {
-    Node *found;
+    // Do both sides so that we touch every element instead of reporting
+    // that we found an element like the other visitors.
+    BFS_Visit_SwapAtDepth(root->left, currentDepth, desiredDepth - 1);
+    BFS_Visit_SwapAtDepth(root->right, currentDepth, desiredDepth - 1);
 
-    found = BFS_Visit_SwapAtDepth(root->left, currentDepth - 1, desiredDepth - 1);
-    if (found != NULL)
-      return found;
-
-    found = BFS_Visit_SwapAtDepth(root->right, currentDepth - 1, desiredDepth - 1);
-    if (found != NULL)
-      return found;
+    return root;
   }
 
   return NULL;
@@ -160,7 +157,7 @@ Node *insertByNodeNumber(Node *root, int leftChildValue, int rightChildValue, in
       if (rightChildValue == -1) {
         // Be clear about what we intend even though this is repetetive given
         // that the child would've been set to NULL on initialization.
-        current->left = NULL;
+        current->right = NULL;
       } else {
         current->right = new Node;
         
@@ -195,12 +192,6 @@ void inorderPrint(Node *root) {
 }
 
 Node *swapAtDepth(Node *root, int swapDepth, int maxHeight) {
-  // Traverse to depth? Use BFS Search based on depth to get each side?
-  //
-  // This is probably not what we want to do because it'll only allow a swap on
-  // the first node found.
-  //
-  // Modify the vistor to handle the swap
   root->left = BreadthFirstSearch(root->left, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
   root->right = BreadthFirstSearch(root->right, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
 
@@ -240,26 +231,25 @@ int main() {
     int numSwaps;
     cin >> numSwaps;
 
-    cout << "numSwaps: " << numSwaps << endl;
+    vector<int> swapDepths;
 
     for (int i = 0; i < numSwaps; i++) {
       int swapDepth;
       cin >> swapDepth;
 
-      cout << "i: " << i << " swapDepth: " << swapDepth << " currentHeight: " << currentHeight << endl;
-
-      while (swapDepth <= currentHeight) {
-        //root = BreadthFirstSearch(root, swapDepth, currentHeight, BFS_Visit_SwapAtDepth);
-        root = swapAtDepth(root, swapDepth, currentHeight);
-
-        swapDepth *= 2;
-      }
+      swapDepths.push_back(swapDepth);
     }
     
 
-    cout << "After Swap:" << endl;
-    inorderPrint(root);
-    cout << endl;
+    for (auto depth : swapDepths) {
+      while (depth <= currentHeight) {
+        root = swapAtDepth(root, depth, currentHeight);
+        depth *= 2;
+      }
+    
+      inorderPrint(root);
+      cout << endl;
+    }
 
     return 0;
 }

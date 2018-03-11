@@ -76,7 +76,7 @@ Node *BFS_Visit_Print(Node *root, int currentDepth, int searchTerm) {
   if (currentDepth == 1) {
     cout << "NodeNumber: " << root->nodeNumber << " "\
          << "Depth: " << root->depth << " "\
-         << "Data: " << root->data << endl; // Finish this.
+         << "Data: " << root->data << endl;
   }
   else {
     Node *found;
@@ -98,10 +98,6 @@ Node *BreadthFirstSearch(Node *root, int searchTerm, int maxHeight, Node* (*visi
   if (root == NULL)
     return NULL;
 
-  // Normally we'd have to calculate the height here but,
-  // based on the way that input is handed to this program,
-  // we can short circuit that because we've figured out the max
-  // height upon input.
   for (int i = 1; i <= maxHeight; i++) {
     Node *found = NULL;
     // Always call BFS_Visit with root so the recursion works.
@@ -192,8 +188,14 @@ void inorderPrint(Node *root) {
 }
 
 Node *swapAtDepth(Node *root, int swapDepth, int maxHeight) {
-  root->left = BreadthFirstSearch(root->left, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
-  root->right = BreadthFirstSearch(root->right, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
+  if (maxHeight == 2) {
+    Node *temp = root->right;
+    root->right = root->left;
+    root->left = temp;
+  } else { 
+    root->left = BreadthFirstSearch(root->left, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
+    root->right = BreadthFirstSearch(root->right, swapDepth-1, maxHeight, BFS_Visit_SwapAtDepth);
+  }
 
   return root;
 }
@@ -223,11 +225,6 @@ int main() {
         nodeNumber++;
     }
     
-    cout << "After Tree creation:" << endl;
-    inorderPrint(root);
-    cout << endl;
-
-    
     int numSwaps;
     cin >> numSwaps;
 
@@ -242,7 +239,7 @@ int main() {
     
 
     for (auto depth : swapDepths) {
-      while (depth <= currentHeight) {
+      while (depth < currentHeight) {
         root = swapAtDepth(root, depth, currentHeight);
         depth *= 2;
       }

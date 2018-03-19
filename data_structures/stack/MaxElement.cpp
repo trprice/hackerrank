@@ -32,9 +32,9 @@ Node *pop (Node *head) {
     return head;
 }
 
-void printMax(Node *head) {
+int findMax(Node *head) {
     if (head == NULL)
-        return;
+        return -1;
     
     int currentMax = -1;
     Node *temp = head;
@@ -44,8 +44,8 @@ void printMax(Node *head) {
         
         temp = temp->next;
     }
-    
-    cout << currentMax << endl;
+
+    return currentMax;
 }
 
 int main() {
@@ -72,12 +72,21 @@ int main() {
                 break;
                 
             case '2':
+                // Another optimization would be to add a bool tracking whether
+                // the stack is sorted. If it is, we could simply update from
+                // the head after popping. During an add, we'd have to mark it
+                // false and wait for another find to update it.
+                // 
+                // That being said, this implementation is fast enough for
+                // HackerRank so I'm not going to bother implementing that now.
+                if (head->data == max)
+                    max = findMax(head->next);
+
                 head = pop(head);
                 break;
                 
             case '3':
                 cout << max;
-                //printMax(head);
                 break;
         }
     }
